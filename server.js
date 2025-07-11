@@ -17,12 +17,10 @@ app.use(express.json());
 // API
 app.post("/create-payment-intent", async (req, res) => {
   try {
-    const { email, amount } = req.body;
+    const { amount } = req.body;
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: "usd",
-      receipt_email: email,
-      metadata: { integration_check: "accept_a_payment" },
       automatic_payment_methods: { enabled: true },
     });
 
