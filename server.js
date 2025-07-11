@@ -18,21 +18,6 @@ app.use(express.json());
 app.post("/create-payment-intent", async (req, res) => {
   try {
     const { email, amount } = req.body;
-
-    // let customerId = null;
-    // if (saveCard) {
-    //   const customer = await stripe.customers.create({ email });
-    //   customerId = customer.id;
-    // }
-
-    //   const setupIntent = await stripe.setupIntents.create({
-    //     customer: customerId,
-    //   });
-    //   res.send({
-    //     clientSecret: setupIntent.client_secret,
-    //     customerId: customerId,
-    //   });
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency: "usd",
