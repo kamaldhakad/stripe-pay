@@ -31,7 +31,7 @@ router.post("/create-checkout-session", async (req, res) => {
     ],
     mode: "payment",
     ui_mode: "custom",
-    // return_url: `${process.env.DOMAIN}/done?session_id={CHECKOUT_SESSION_ID}`,
+    return_url: "http://localhost:3000/",
   });
 
   res.send({ clientSecret: session.client_secret });
