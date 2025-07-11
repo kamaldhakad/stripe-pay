@@ -1,49 +1,52 @@
 require("dotenv").config();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-03-31.basil",
-});
 const cors = require("cors");
 const express = require("express");
 const app = express();
-const router = express.Router();
-app.use(express.static("public"));
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
+// Middleware
 app.use(
   cors({
-    origin: "http://localhost:3000", // or your frontend domain
+    origin: "http://localhost:3000",
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
   })
 );
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Create checkout session
-router.post("/create-checkout-session", async (req, res) => {
-  const { priceId } = req.body;
+// API
+app.post("/create-payment-intent", async (req, res) => {
+  try {
+    const { email, amount } = req.body;
 
-  const session = await stripe.checkout.sessions.create({
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
-      },
-    ],
-    mode: "payment",
-    ui_mode: "custom",
-    return_url: "http://localhost:3000/",
-  });
+    // let customerId = null;
+    // if (saveCard) {
+    //   const customer = await stripe.customers.create({ email });
+    //   customerId = customer.id;
+    // }
 
-  res.send({ clientSecret: session.client_secret });
+    //   const setupIntent = await stripe.setupIntents.create({
+    //     customer: customerId,
+    //   });
+    //   res.send({
+    //     clientSecret: setupIntent.client_secret,
+    //     customerId: customerId,
+    //   });
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: "usd",
+      receipt_email: email,
+      metadata: { integration_check: "accept_a_payment" },
+      automatic_payment_methods: { enabled: true },
+    });
+
+    res.send({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    console.error("Payment intent error:", error);
+    res.status(500).json({ error: error.message });
+  }
 });
 
-// Get status of checkout session
-router.get("/session-status", async (req, res) => {
-  const { session_id } = req.query;
-  const session = await stripe.checkout.sessions.retrieve(session_id);
-  res.send({ status: session.status });
-});
-
-app.use("/api", router);
-
-app.listen(4242, () => console.log("Server running on port 4242"));
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
