@@ -6,6 +6,14 @@ const express = require("express");
 const app = express();
 const router = express.Router();
 app.use(express.static("public"));
+
+app.use(
+  cors({
+    origin: "http://localhost:3000", // or your frontend domain
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+  })
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
