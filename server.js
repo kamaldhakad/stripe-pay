@@ -2,6 +2,7 @@ require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-03-31.basil",
 });
+const cors = require("cors");
 const express = require("express");
 const app = express();
 const router = express.Router();
