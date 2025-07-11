@@ -34,7 +34,7 @@ app.post("/create-payment-intent", async (req, res) => {
 app.get("/get-transactions", async (req, res) => {
   const charges = await stripe.charges.list();
 
-  res.send({ status: true, data: JSON.stringify(charges) });
+  res.send({ status: true, data: charges });
 });
 
 const PORT = process.env.PORT || 8000;
