@@ -31,5 +31,11 @@ app.post("/create-payment-intent", async (req, res) => {
   }
 });
 
+app.get("/get-transactions", async (req, res) => {
+  const charges = await stripe.charges.list();
+
+  res.send({ status: true, data: JSON.stringify(charges) });
+});
+
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
